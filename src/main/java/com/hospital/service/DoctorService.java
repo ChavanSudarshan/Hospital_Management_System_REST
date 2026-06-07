@@ -10,5 +10,7 @@ public interface DoctorService {
 
 	DoctorResponseDTO saveDoctor(DoctorRequestDTO dto);
 
-	//DoctorResponseDTO saveDoctor(DoctorRequestDTO dto); 
+	public DoctorResponseDTO findDoctor(int id);
+
+	DoctorResponseDTO updateDoctor(int id, DoctorRequestDTO dto);
 }
