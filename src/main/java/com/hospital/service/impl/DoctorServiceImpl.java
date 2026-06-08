@@ -16,26 +16,32 @@ import lombok.RequiredArgsConstructor;
 public class DoctorServiceImpl implements DoctorService {
 
 	private final DoctorRepository repository;
-
 	private final DoctorMapper doctorMapper;
 
 	@Override
 	public DoctorResponseDTO saveDoctor(DoctorRequestDTO dto) {
+
 		Doctor doctor = doctorMapper.toEntity(dto);
+
 		Doctor savedDoctor = repository.save(doctor);
+
 		return doctorMapper.toResponse(savedDoctor);
 	}
 
 	@Override
 	public DoctorResponseDTO findDoctor(int id) {
-		Doctor doctor = repository.findById(id);
+
+		Doctor doctor = repository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Doctor not found with id: " + id));
+
 		return doctorMapper.toResponse(doctor);
 	}
 
 	@Override
 	public DoctorResponseDTO updateDoctor(int id, DoctorRequestDTO dto) {
 
-		Doctor doctor = repository.findById(id);
+		Doctor doctor = repository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Doctor not found with id: " + id));
 
 		if (dto.getName() != null) {
 			doctor.setName(dto.getName());
@@ -58,9 +64,11 @@ public class DoctorServiceImpl implements DoctorService {
 		return doctorMapper.toResponse(updatedDoctor);
 	}
 
+	@Override
 	public DoctorResponseDTO updateEmail(int id, String email) {
 
-		Doctor doctor = repository.findById(id);
+		Doctor doctor = repository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Doctor not found with id: " + id));
 
 		if (email != null && !email.isBlank()) {
 			doctor.setEmail(email);
@@ -71,8 +79,14 @@ public class DoctorServiceImpl implements DoctorService {
 		return doctorMapper.toResponse(updatedDoctor);
 	}
 
+	@Override
 	public String deleteDoctor(int id) {
-		repository.deleteById(id);
-		return "Deleted Successfully";
+
+		Doctor doctor = repository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Doctor not found with id: " + id));
+
+		repository.delete(doctor);
+
+		return "Doctor deleted successfully";
 	}
 }

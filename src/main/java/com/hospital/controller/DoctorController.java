@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hospital.DTO.DoctorRequestDTO;
@@ -21,53 +22,71 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
+@RequestMapping("/doctor")
+@RequiredArgsConstructor
 @CrossOrigin
 @Slf4j
-@RequiredArgsConstructor
-@RequestMapping(value = "/doctor")
 public class DoctorController {
 
-	private final DoctorServiceImpl doctorServiceImpl;
+	private final DoctorServiceImpl doctorService;
 
-	// Save the Doctor
-	@PostMapping("/save")
+	// Create Doctor
+	// POST http://localhost:8080/doctor
+	@PostMapping
 	public ResponseEntity<DoctorResponseDTO> saveDoctor(@RequestBody DoctorRequestDTO requestDTO) {
-		log.info(requestDTO.getEmail() + " " + requestDTO.getName() + " " + requestDTO.getPhone() + " "
-				+ requestDTO.getSpecialization());
-		DoctorResponseDTO responseDTO = doctorServiceImpl.saveDoctor(requestDTO);
+
+		log.info("Creating doctor with email: {}", requestDTO.getEmail());
+
+		DoctorResponseDTO responseDTO = doctorService.saveDoctor(requestDTO);
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 	}
 
-	// Fetch the doctor from DB
-	@GetMapping("/id/{id}")
+	// Get Doctor By Id
+	// GET http://localhost:8080/doctor/1
+	@GetMapping("/{id}")
 	public ResponseEntity<DoctorResponseDTO> findDoctor(@PathVariable int id) {
-		DoctorResponseDTO dto = doctorServiceImpl.findDoctor(id);
-		//return ResponseEntity.status(HttpStatus.OK).body(dto);
+
+		log.info("Fetching doctor with id: {}", id);
+
+		DoctorResponseDTO dto = doctorService.findDoctor(id);
+
 		return ResponseEntity.ok(dto);
 	}
 
-	// Update the doctor fully.
-	@PutMapping("/id/{id}")
+	// Update Complete Doctor
+	// PUT http://localhost:8080/doctor/1
+	@PutMapping("/{id}")
 	public ResponseEntity<DoctorResponseDTO> updateDoctor(@PathVariable int id, @RequestBody DoctorRequestDTO dto) {
-		log.info("Id From Request " + id);
-		DoctorResponseDTO response = doctorServiceImpl.updateDoctor(id, dto);
+
+		log.info("Updating doctor with id: {}", id);
+
+		DoctorResponseDTO response = doctorService.updateDoctor(id, dto);
+
 		return ResponseEntity.ok(response);
 	}
 
-	//Patch the Doctor Record
-	@PatchMapping("/id/{id}/email/{email}")
-	public ResponseEntity<DoctorResponseDTO> updateEmail(@PathVariable int id, @PathVariable String email) {
-		log.info("Id From Request: " + id + " " + "Mail From Request: " + email);
-		DoctorResponseDTO updatedDoctor = doctorServiceImpl.updateEmail(id, email);
+	// Update Only Email
+	// PATCH http://localhost:8080/doctor/1/email?email=test@gmail.com
+	@PatchMapping("/{id}/email")
+	public ResponseEntity<DoctorResponseDTO> updateEmail(@PathVariable int id, @RequestParam String email) {
+
+		log.info("Updating email for doctor id: {}", id);
+
+		DoctorResponseDTO updatedDoctor = doctorService.updateEmail(id, email);
+
 		return ResponseEntity.ok(updatedDoctor);
 	}
-	
-	
-	//Delete the Doctor
+
+	// Delete Doctor
+	// DELETE http://localhost:8080/doctor/1
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteDoctor(@PathVariable int id){
-		log.info("Id From Request: " + id);
-		String msg = doctorServiceImpl.deleteDoctor(id);
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(msg);
+	public ResponseEntity<String> deleteDoctor(@PathVariable int id) {
+
+		log.info("Deleting doctor with id: {}", id);
+
+		String msg = doctorService.deleteDoctor(id);
+
+		return ResponseEntity.ok(msg);
 	}
 }

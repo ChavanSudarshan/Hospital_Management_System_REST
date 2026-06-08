@@ -12,5 +12,9 @@ public interface DoctorService {
 
 	public DoctorResponseDTO findDoctor(int id);
 
+	DoctorResponseDTO updateEmail(int id, String email);
+
+	String deleteDoctor(int id);
+
 	DoctorResponseDTO updateDoctor(int id, DoctorRequestDTO dto);
 }

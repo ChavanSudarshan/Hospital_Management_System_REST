@@ -8,6 +8,4 @@ import com.hospital.entity.Doctor;
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Integer>{
 
-	Doctor findById(int id);
-	
 }
